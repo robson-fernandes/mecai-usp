@@ -11,7 +11,7 @@ movimentacao = read.table('movimentacao.csv', header=TRUE, sep=";")
 attach(movimentacao)
 
 
-test.set = movimentacao[1:69000, c("quantidade", "mes", "indiceSemana", "descricaoDiaSemana", "produto", "feriado", "codTipoVenda", "codGrupoVenda")]
+test.set = movimentacao[1:69000, c("quantidadeIntervalo", "mes", "indiceSemana", "descricaoDiaSemana", "produto", "feriado", "codTipoVenda", "codGrupoVenda")]
 
 ## define variables as factors
 test.set$diaSemana = as.factor(test.set$diaSemana)
@@ -19,7 +19,7 @@ test.set$mes = as.factor(test.set$mes)
 test.set$indiceSemana = as.factor(test.set$indiceSemana)
 test.set$codTipoVenda = as.factor(test.set$codTipoVenda)
 test.set$codGrupoVenda = as.factor(test.set$codGrupoVenda)
-#test.set$quantidade = as.factor(test.set$quantidade)
+test.set$quantidadeIntervalo = as.factor(test.set$quantidadeIntervalo)
 
 bn_df <- data.frame(test.set)
 
@@ -55,10 +55,10 @@ style <- list(node=list(fillcolor="#70B2E1",
                         fontcolor="white",
                         height=5,
                         lwd=2
-                        ),
-              edge=list(color="#70B2E1",arrowsize=".3")
+),
+edge=list(color="#70B2E1",arrowsize=".3")
 
-              )
+)
 
 defAttrs <- getDefaultAttrs()
 
@@ -90,9 +90,9 @@ fittedbn <- bn.fit(res, data = bn_df, method="mle")
 
 #Qual ? chance de em Janeiro, 
 a <- cpquery(fittedbn, 
-        
-        event = (quantidade>10 & quantidade <15),
-        evidence = (mes=="1" & indiceSemana=="4" & descricaoDiaSemana=="Domingo"  &  codGrupoVenda=="4" & codTipoVenda=="1" ) )
+             
+             event = (quantidadeIntervalo == "10-20"),
+             evidence = (mes=="1" & indiceSemana=="4" & descricaoDiaSemana=="Domingo"  &  codGrupoVenda=="4" & codTipoVenda=="1" ) )
 
 percentual = a * 100
 percentual
