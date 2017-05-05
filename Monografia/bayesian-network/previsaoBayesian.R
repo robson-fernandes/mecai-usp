@@ -32,6 +32,7 @@ bn_df <- data.frame(test.set)
 #e apresentarem bom desempenho se comparado a outros algoritmos
 res <- hc(bn_df)
 
+
 g <- graphviz.plot(res)
 
 #defAttrs <- getDefaultAttrs()
@@ -91,7 +92,7 @@ fittedbn <- bn.fit(res, data = bn_df, method="mle")
 #Qual ? chance de em Janeiro, 
 a <- cpquery(fittedbn, 
         
-        event = (quantidade>10 & quantidade <15),
+        event = (quantidade>0 & quantidade <15),
         evidence = (mes=="1" & indiceSemana=="4" & descricaoDiaSemana=="Domingo"  &  codGrupoVenda=="4" & codTipoVenda=="1" ) )
 
 percentual = a * 100
