@@ -1,27 +1,27 @@
 # ------------------------------------------
-# Modelo Linear Generalizado Bayesiano
+# Rede Bayesiana Gaussiana - GS
 # ------------------------------------------
 
 #
-# Limpa workspace e variaveis
+# Limpa workspace e variáveis
 #
 ls()
 rm(list=ls())
 graphics.off()
 
 #
-# Pacotes - 
+# Pacotes
 #
-# <arm>
-# Pacote de analise de dados e modelos hierarquicos de regressao
+# <bnlearn>
+# Pacote de Análise e Inferência em Redes Bayesianas
 #
 # <StatMeasures>
-# Pacote de verificacoes estatisticas 
+# Pacote de verificações estatísticas
 #
 # <plotly>
-# Pacote de visualizacao de dados
+# Pacote de visualização de dados
 #
-library(arm) 
+library(bnlearn)
 library(StatMeasures)
 library(plotly)
 
@@ -37,27 +37,25 @@ loadDataSet <- function()
   
   dados <-  cbind(dados.grupos$mes, 
                   dados.grupos$quantidadeProduto,
-                  dados.grupos$venda, 
                   dados.grupos$grupoMilkShake, 
                   dados.grupos$grupoSanduiche, 
                   dados.grupos$grupoBebida,
-                  dados.grupos$grupoAcompanhamento,
                   dados.grupos$grupoPrato,
+                  dados.grupos$grupoAcompanhamento,
                   dados.grupos$grupoAdicional,
                   dados.grupos$grupoBrinde,
-                  dados.grupos$grupoItensComposicao)
+                  dados.grupos$venda)
   
   colnames(dados) <- c("mes", 
                        "quantidadeProduto", 
-                       "venda",
                        "grupoMilkShake", 
                        "grupoSanduiche",
                        "grupoBebida",
-                       "grupoAcompanhamento",
                        "grupoPrato",
+                       "grupoAcompanhamento",
                        "grupoAdicional",
                        "grupoBrinde",
-                       "grupoItensComposicao")
+                       "venda")
   
   #
   # Conjunto de Treinamento
@@ -78,45 +76,35 @@ loadDataSet <- function()
   test.set <<- as.data.frame(test.set)
 }
 
+
 #
-# Funcao - Ajuste Modelo - Modelo Linear Generalizado Bayesiano
+# Funcao - Ajuste Modelo - Rede Bayesiana Gaussiana - GS
 #
-fitModelBayesGLM <- function(training.set)
+fitModelBayesianNetworkGS <- function(training.set)
 {
-    fit.bayesian.glm <- bayesglm(venda ~ 
-                          mes +
-                          quantidadeProduto  +
-                          grupoMilkShake + 
-                          grupoSanduiche + 
-                          grupoBebida +
-                          grupoAcompanhamento +
-                          grupoPrato + 
-                          grupoAdicional,
-                          family=gaussian(link = "identity"),
-                          data= training.set,
-                          prior.df= Inf,
-                          prior.mean = 0,
-                          prior.scale = NULL,
-                          maxit = 100)
-    
-    summary(fit.bayesian.glm)
-    return(fit.bayesian.glm)
+  bayesian.gs <- cextend(gs(training.set))
+  
+  plot(bayesian.gs)
+  
+  fit.bayesian.gs <- bn.fit(bayesian.gs, data = training.set, method="mle")
+  
+  #bn.fit.qqplot(fit.bayesian.gs,main = "Normal Q-Q Plot", xlab = )
+  #bn.fit.histogram(fit.bayesian.gs)
+  #bn.fit.xyplot(fit.bayesian.gs)
+  return(fit.bayesian.gs)
 }
 
 #
-# Funcao - Predicao - Modelo Linear Generalizado Bayesiano
+# Funcao - Predição - Rede Bayesiana Gaussiana - GS
 #
-predictBayesGLM <- function(fit.bayesian.glm, test.set)
+predictBayesianNetworkGS <- function(fit.bayesian.gs, test.set)
 {
-  predict.bayesian.glm <- predict.glm(fit.bayesian.glm,
-                                      newdata = as.data.frame(test.set),
-                                      se.fit = T)
-  return(predict.bayesian.glm)
+  predict.bayesian.gs <- predict(fit.bayesian.gs, "venda", test.set)
+  return(predict.bayesian.gs)
 }
 
-
 #
-# Funcao - Conversao de Valores normalizados em escala para Original
+# Funcao - Conversão de valores normalizados em escala para original
 #
 scaleToOriginal <- function(value, scale.value)
 {
@@ -142,7 +130,7 @@ getDataSet.RealvsPrevisto <- function(real, previsto)
 }
 
 #
-# Funcao - Erro Percentual Absoluto Medio
+# Funcao - Erro Percentual Absoluto Médio
 #
 getMape <- function(data.set)
 {
@@ -152,9 +140,9 @@ getMape <- function(data.set)
 }
 
 #
-# Funcao - Visualizar grafico do modelo
+# Funcao - Visualizar gráfico do modelo
 #
-plotBGLM <- function(ds.resultado)
+plotBayesianNetworkGS <- function(ds.resultado)
 {
   f <- list(family = "Verdana", size = 14, color = "#000000")
   x <- list( title = "Período", titlefont = f)
@@ -167,40 +155,32 @@ plotBGLM <- function(ds.resultado)
                type = "scatter",
                mode = "lines") %>%
     layout(xaxis = x, yaxis = y)  %>%
-    add_trace(y = ~previsto,
-              line = list(color = 'rgb(255, 87, 34)', width = 3),
-              name = "Modelo Linear Generalizado Bayesiano", 
+    add_trace(y = ~previsto, 
+              line = list(color = "rgb(156, 39, 176)", width = 3),
+              name = "Modelo Rede Bayesiana Gaussiana - GS", 
               connectgaps = TRUE)
   p
 }
 
-
 # Carrega conjunto de treinamento e teste
 loadDataSet()
 
-#Ajuste Modelo - Modelo Linear Generalizado Bayesiano
-fit.bayesian.glm <- fitModelBayesGLM(training.set)
+#Ajuste Modelo - Modelo Rede Bayesiana Gaussiana - GS
+fit.bayesian.gs <- fitModelBayesianNetworkGS(training.set)
 
-#Predicao - Modelo Linear Generalizado Bayesiano
-predict.bayesian.glm <- predictBayesGLM(fit.bayesian.glm, test.set)
-
-#Análise de Resíduos
-resid(fit.bayesian.glm) #List of residuals
-hist(resid(fit.bayesian.glm))
-plot(density(resid(fit.bayesian.glm))) #A density plot
-qqnorm(resid(fit.bayesian.glm)) # A quantile normal plot - good for checking normality
-qqline(resid(fit.bayesian.glm))
+#Predição - Modelo Rede Bayesiana Gaussiana - GS
+predict.bayesian.gs <- predictBayesianNetworkGS(fit.bayesian.gs, test.set)
 
 #Gerar Conjunto de Dados - Real vs Previsto
 real <- test.setOriginal[,"venda"]
-previsto <- predict.bayesian.glm$fit
+previsto <- predict.bayesian.gs
 ds.resultado <- getDataSet.RealvsPrevisto(real, previsto)
 
-#Erro Percentual Absoluto Medio
+#Erro Percentual Absoluto Médio
 getMape(ds.resultado)
 
 # Visualizar Gráfico do Modelo
-plotBGLM(ds.resultado)
+plotBayesianNetworkGS(ds.resultado)
 
 
 previsto <- ds.resultado[,"previsto"]
@@ -209,3 +189,6 @@ real <- ds.resultado[,"real"]
 dif <- previsto - real
 sum(previsto)
 sum(real)
+
+
+previsto

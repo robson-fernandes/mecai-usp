@@ -1,29 +1,19 @@
 # ------------------------------------------
-# Modelo Linear Generalizado Bayesiano
+# Rede Neural MLP - 2 camadas ocultas (3,2) neurônios
 # ------------------------------------------
 
 #
-# Limpa workspace e variaveis
+# Limpa workspace e variáveis
 #
 ls()
 rm(list=ls())
 graphics.off()
 
-#
-# Pacotes - 
-#
-# <arm>
-# Pacote de analise de dados e modelos hierarquicos de regressao
-#
-# <StatMeasures>
-# Pacote de verificacoes estatisticas 
-#
-# <plotly>
-# Pacote de visualizacao de dados
-#
-library(arm) 
-library(StatMeasures)
 library(plotly)
+library(neuralnet)
+library(forecast)
+library(StatMeasures)
+library(LPAREN)
 
 #
 # Funcao - Carregar conjunto de Treinamento e Teste
@@ -37,7 +27,6 @@ loadDataSet <- function()
   
   dados <-  cbind(dados.grupos$mes, 
                   dados.grupos$quantidadeProduto,
-                  dados.grupos$venda, 
                   dados.grupos$grupoMilkShake, 
                   dados.grupos$grupoSanduiche, 
                   dados.grupos$grupoBebida,
@@ -45,11 +34,10 @@ loadDataSet <- function()
                   dados.grupos$grupoPrato,
                   dados.grupos$grupoAdicional,
                   dados.grupos$grupoBrinde,
-                  dados.grupos$grupoItensComposicao)
+                  dados.grupos$venda)
   
   colnames(dados) <- c("mes", 
                        "quantidadeProduto", 
-                       "venda",
                        "grupoMilkShake", 
                        "grupoSanduiche",
                        "grupoBebida",
@@ -57,7 +45,7 @@ loadDataSet <- function()
                        "grupoPrato",
                        "grupoAdicional",
                        "grupoBrinde",
-                       "grupoItensComposicao")
+                       "venda")
   
   #
   # Conjunto de Treinamento
@@ -78,45 +66,69 @@ loadDataSet <- function()
   test.set <<- as.data.frame(test.set)
 }
 
+
 #
-# Funcao - Ajuste Modelo - Modelo Linear Generalizado Bayesiano
+# Funcao - Ajuste Modelo - Rede Neural MLP
 #
-fitModelBayesGLM <- function(training.set)
+fitModelNeuralNetworkMLP <- function(training.set)
 {
-    fit.bayesian.glm <- bayesglm(venda ~ 
-                          mes +
-                          quantidadeProduto  +
+  formula <- as.formula('venda  ~ 
                           grupoMilkShake + 
                           grupoSanduiche + 
-                          grupoBebida +
-                          grupoAcompanhamento +
+                          grupoBebida + 
+                          grupoAcompanhamento + 
                           grupoPrato + 
-                          grupoAdicional,
-                          family=gaussian(link = "identity"),
-                          data= training.set,
-                          prior.df= Inf,
-                          prior.mean = 0,
-                          prior.scale = NULL,
-                          maxit = 100)
-    
-    summary(fit.bayesian.glm)
-    return(fit.bayesian.glm)
+                          grupoAdicional + 
+                          grupoBrinde + 
+                          quantidadeProduto   + 
+                          mes')
+  
+  fit.neural.network = neuralnet(formula,
+                    data=training.set,
+                    linear.output=TRUE,
+                    hidden=c(3,2),
+                    threshold =0.01,
+                    rep=10,
+                    algorithm = "rprop+")
+  
+  # if (file.exists("fitNN.rds")) 
+  # {
+  #   fit.neural.network <- readRDS('fitNN.rds')
+  # }
+  # else 
+  # {
+  #   fit.neural.network = neuralnet(formula,
+  #                   data=data,
+  #                   linear.output=TRUE,
+  #                   hidden=c(3,2),
+  #                   threshold =0.01,
+  #                   rep=2)# algorithm = "rprop+"
+  #   
+  #   saveRDS(fit.neural.network, "fitNN.rds")
+  # }
+
+  plot(fit.neural.network,
+       col.entry="green",
+       col.hidden="blue",
+       col.out="red",
+       rep="best")
+  
+  return(fit.neural.network)
 }
 
+
 #
-# Funcao - Predicao - Modelo Linear Generalizado Bayesiano
+# Funcao - Predição - Rede Neural MLP
 #
-predictBayesGLM <- function(fit.bayesian.glm, test.set)
+predictNeuralNetworkMLP <- function(fit.neural.network, test.set)
 {
-  predict.bayesian.glm <- predict.glm(fit.bayesian.glm,
-                                      newdata = as.data.frame(test.set),
-                                      se.fit = T)
-  return(predict.bayesian.glm)
+  predict.neural.network <- compute(fit.neural.network, test.set)
+  return(predict.neural.network)
 }
 
 
 #
-# Funcao - Conversao de Valores normalizados em escala para Original
+# Funcao - Conversão de valores normalizados em escala para original
 #
 scaleToOriginal <- function(value, scale.value)
 {
@@ -142,7 +154,7 @@ getDataSet.RealvsPrevisto <- function(real, previsto)
 }
 
 #
-# Funcao - Erro Percentual Absoluto Medio
+# Funcao - Erro Percentual Absoluto Médio
 #
 getMape <- function(data.set)
 {
@@ -151,10 +163,11 @@ getMape <- function(data.set)
   return(mape*100)
 }
 
+
 #
-# Funcao - Visualizar grafico do modelo
+# Funcao - Visualizar gráfico do modelo
 #
-plotBGLM <- function(ds.resultado)
+plotNeuralNetworkMLP <- function(ds.resultado)
 {
   f <- list(family = "Verdana", size = 14, color = "#000000")
   x <- list( title = "Período", titlefont = f)
@@ -167,9 +180,9 @@ plotBGLM <- function(ds.resultado)
                type = "scatter",
                mode = "lines") %>%
     layout(xaxis = x, yaxis = y)  %>%
-    add_trace(y = ~previsto,
-              line = list(color = 'rgb(255, 87, 34)', width = 3),
-              name = "Modelo Linear Generalizado Bayesiano", 
+    add_trace(y = ~previsto, 
+              line = list(color = 'rgb(0, 193, 9)', width = 3),
+              name = "Modelo Rede Neural MLP", 
               connectgaps = TRUE)
   p
 }
@@ -178,29 +191,22 @@ plotBGLM <- function(ds.resultado)
 # Carrega conjunto de treinamento e teste
 loadDataSet()
 
-#Ajuste Modelo - Modelo Linear Generalizado Bayesiano
-fit.bayesian.glm <- fitModelBayesGLM(training.set)
+#Ajuste Modelo - Rede Neural MLP
+fit.neural.network <- fitModelNeuralNetworkMLP(training.set)
 
-#Predicao - Modelo Linear Generalizado Bayesiano
-predict.bayesian.glm <- predictBayesGLM(fit.bayesian.glm, test.set)
-
-#Análise de Resíduos
-resid(fit.bayesian.glm) #List of residuals
-hist(resid(fit.bayesian.glm))
-plot(density(resid(fit.bayesian.glm))) #A density plot
-qqnorm(resid(fit.bayesian.glm)) # A quantile normal plot - good for checking normality
-qqline(resid(fit.bayesian.glm))
+#Predição - Rede Neural MLP
+predict.neural.network <- predictNeuralNetworkMLP(fit.neural.network, test.set[1:9])
 
 #Gerar Conjunto de Dados - Real vs Previsto
 real <- test.setOriginal[,"venda"]
-previsto <- predict.bayesian.glm$fit
+previsto <- predict.neural.network$net.result
 ds.resultado <- getDataSet.RealvsPrevisto(real, previsto)
 
-#Erro Percentual Absoluto Medio
+#Erro Percentual Absoluto Médio
 getMape(ds.resultado)
 
 # Visualizar Gráfico do Modelo
-plotBGLM(ds.resultado)
+plotNeuralNetworkMLP(ds.resultado)
 
 
 previsto <- ds.resultado[,"previsto"]

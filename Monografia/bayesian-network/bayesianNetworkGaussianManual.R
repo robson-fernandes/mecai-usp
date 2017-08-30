@@ -1,27 +1,27 @@
 # ------------------------------------------
-# Modelo Linear Generalizado Bayesiano
+# Rede Bayesiana Gaussiana - Manual
 # ------------------------------------------
 
 #
-# Limpa workspace e variaveis
+# Limpa workspace e variáveis
 #
 ls()
 rm(list=ls())
 graphics.off()
 
 #
-# Pacotes - 
+# Pacotes
 #
-# <arm>
-# Pacote de analise de dados e modelos hierarquicos de regressao
+# <bnlearn>
+# Pacote de Análise e Inferência em Redes Bayesianas
 #
 # <StatMeasures>
-# Pacote de verificacoes estatisticas 
+# Pacote de verificações estatísticas
 #
 # <plotly>
-# Pacote de visualizacao de dados
+# Pacote de visualização de dados
 #
-library(arm) 
+library(bnlearn)
 library(StatMeasures)
 library(plotly)
 
@@ -37,7 +37,6 @@ loadDataSet <- function()
   
   dados <-  cbind(dados.grupos$mes, 
                   dados.grupos$quantidadeProduto,
-                  dados.grupos$venda, 
                   dados.grupos$grupoMilkShake, 
                   dados.grupos$grupoSanduiche, 
                   dados.grupos$grupoBebida,
@@ -45,11 +44,10 @@ loadDataSet <- function()
                   dados.grupos$grupoPrato,
                   dados.grupos$grupoAdicional,
                   dados.grupos$grupoBrinde,
-                  dados.grupos$grupoItensComposicao)
+                  dados.grupos$venda)
   
   colnames(dados) <- c("mes", 
                        "quantidadeProduto", 
-                       "venda",
                        "grupoMilkShake", 
                        "grupoSanduiche",
                        "grupoBebida",
@@ -57,13 +55,14 @@ loadDataSet <- function()
                        "grupoPrato",
                        "grupoAdicional",
                        "grupoBrinde",
-                       "grupoItensComposicao")
+                       "venda")
   
   #
   # Conjunto de Treinamento
   #
   training.setOriginal <<- dados[1:85, ]
   training.set <- training.setOriginal
+  
   training.set[,"mes"] <- as.double(training.set[,"mes"])
   training.set <- scale(training.set)
   training.set <<- as.data.frame(training.set)
@@ -73,50 +72,59 @@ loadDataSet <- function()
   #
   test.setOriginal <<- dados[85:90, ]
   test.set <- test.setOriginal
+  
   test.set[,"mes"] <- as.double(test.set[,"mes"])
   test.set <- scale(test.set)
   test.set <<- as.data.frame(test.set)
 }
 
+
 #
-# Funcao - Ajuste Modelo - Modelo Linear Generalizado Bayesiano
+# Funcao - Ajuste Modelo - Rede Bayesiana Gaussiana - Manual
 #
-fitModelBayesGLM <- function(training.set)
+fitModelBayesianNetworkMMHC <- function(training.set)
 {
-    fit.bayesian.glm <- bayesglm(venda ~ 
-                          mes +
-                          quantidadeProduto  +
-                          grupoMilkShake + 
-                          grupoSanduiche + 
-                          grupoBebida +
-                          grupoAcompanhamento +
-                          grupoPrato + 
-                          grupoAdicional,
-                          family=gaussian(link = "identity"),
-                          data= training.set,
-                          prior.df= Inf,
-                          prior.mean = 0,
-                          prior.scale = NULL,
-                          maxit = 100)
-    
-    summary(fit.bayesian.glm)
-    return(fit.bayesian.glm)
+  modelstring = paste("[mes][quantidadeProduto|mes][grupoPrato][grupoMilkShake][grupoSanduiche][grupoAdicional|grupoSanduiche][grupoBebida|grupoSanduiche]",
+                      "[grupoAcompanhamento|grupoSanduiche]",
+                      "[venda|mes:quantidadeProduto:grupoMilkShake:grupoSanduiche:grupoBebida:grupoAcompanhamento:grupoPrato][grupoBrinde|grupoSanduiche]", sep = "")
+  manual.model = model2network(modelstring)
+
+  plot(manual.model)
+  
+  fit.bayesian.mmhc <- bn.fit(manual.model, data = training.set, method="mle")
+  
+  fit.bayesian.mmhc$venda = lm(venda ~
+                                  quantidadeProduto +
+                                  mes +
+                                  grupoMilkShake + 
+                                  grupoSanduiche + 
+                                  grupoBebida +
+                                  grupoAcompanhamento + 
+                                  grupoPrato,
+                                  family=gaussian,
+                                  data= training.set)
+
+  #bn.fit.qqplot(fit.bayesian.mmhc,main = "Normal Q-Q Plot", xlab = )
+  #bn.fit.histogram(fit.bayesian.mmhc, 
+  #                 main = "Histograma de Residuos",
+  #                 xlab = "Residuos",
+  #                 ylab = "Densidade")
+  #bn.fit.xyplot(fit.bayesian.mmhc)
+  
+  return(fit.bayesian.mmhc)
 }
 
 #
-# Funcao - Predicao - Modelo Linear Generalizado Bayesiano
+# Funcao - Predição - Rede Bayesiana Gaussiana - MMHC
 #
-predictBayesGLM <- function(fit.bayesian.glm, test.set)
+predictBayesianNetworkMMHC <- function(fit.bayesian.mmhc, test.set)
 {
-  predict.bayesian.glm <- predict.glm(fit.bayesian.glm,
-                                      newdata = as.data.frame(test.set),
-                                      se.fit = T)
-  return(predict.bayesian.glm)
+  predict.bayesian.mmhc <- predict(fit.bayesian.mmhc, "venda", test.set)
+  return(predict.bayesian.mmhc)
 }
 
-
 #
-# Funcao - Conversao de Valores normalizados em escala para Original
+# Funcao - Conversão de valores normalizados em escala para original
 #
 scaleToOriginal <- function(value, scale.value)
 {
@@ -142,7 +150,7 @@ getDataSet.RealvsPrevisto <- function(real, previsto)
 }
 
 #
-# Funcao - Erro Percentual Absoluto Medio
+# Funcao - Erro Percentual Absoluto Médio
 #
 getMape <- function(data.set)
 {
@@ -152,7 +160,7 @@ getMape <- function(data.set)
 }
 
 #
-# Funcao - Visualizar grafico do modelo
+# Funcao - Visualizar gráfico do modelo
 #
 plotBGLM <- function(ds.resultado)
 {
@@ -167,36 +175,29 @@ plotBGLM <- function(ds.resultado)
                type = "scatter",
                mode = "lines") %>%
     layout(xaxis = x, yaxis = y)  %>%
-    add_trace(y = ~previsto,
-              line = list(color = 'rgb(255, 87, 34)', width = 3),
-              name = "Modelo Linear Generalizado Bayesiano", 
+    add_trace(y = ~previsto, 
+              line = list(color = 'rgb(0, 193, 9)', width = 3),
+              name = "Modelo Rede Bayesiana Gaussiana - MMHC", 
               connectgaps = TRUE)
   p
 }
 
-
 # Carrega conjunto de treinamento e teste
 loadDataSet()
 
-#Ajuste Modelo - Modelo Linear Generalizado Bayesiano
-fit.bayesian.glm <- fitModelBayesGLM(training.set)
+#Ajuste Modelo - Modelo Rede Bayesiana Gaussiana - MMHC
+fit.bayesian.mmhc <- fitModelBayesianNetworkMMHC(training.set)
 
-#Predicao - Modelo Linear Generalizado Bayesiano
-predict.bayesian.glm <- predictBayesGLM(fit.bayesian.glm, test.set)
-
-#Análise de Resíduos
-resid(fit.bayesian.glm) #List of residuals
-hist(resid(fit.bayesian.glm))
-plot(density(resid(fit.bayesian.glm))) #A density plot
-qqnorm(resid(fit.bayesian.glm)) # A quantile normal plot - good for checking normality
-qqline(resid(fit.bayesian.glm))
+#Predição - Modelo Rede Bayesiana Gaussiana - MMHC
+predict.bayesian.mmhc <- predictBayesianNetworkMMHC(fit.bayesian.mmhc, test.set[1:9])
 
 #Gerar Conjunto de Dados - Real vs Previsto
 real <- test.setOriginal[,"venda"]
-previsto <- predict.bayesian.glm$fit
+previsto <- predict.bayesian.mmhc
 ds.resultado <- getDataSet.RealvsPrevisto(real, previsto)
 
-#Erro Percentual Absoluto Medio
+
+#Erro Percentual Absoluto Médio
 getMape(ds.resultado)
 
 # Visualizar Gráfico do Modelo

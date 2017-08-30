@@ -18,48 +18,34 @@ library(StatMeasures)
 #
 loadDataSet <- function()
 {
-  dados.grupos <- read.table("dados-grupos.csv", 
+  dados.vendedor <- read.table("vendedor.csv", 
                              header=TRUE, 
                              sep=";")
-  attach(dados.grupos)
+  attach(dados.vendedor)
   
-  dados <-  cbind(dados.grupos$mes, 
-                  dados.grupos$quantidadeProduto,
-                  dados.grupos$grupoMilkShake, 
-                  dados.grupos$grupoSanduiche, 
-                  dados.grupos$grupoBebida,
-                  dados.grupos$grupoAcompanhamento,
-                  dados.grupos$grupoPrato,
-                  dados.grupos$grupoAdicional,
-                  dados.grupos$grupoBrinde,
-                  dados.grupos$venda)
+  dados <-  cbind(dados.vendedor$vendedor,
+                  dados.vendedor$anoExp, 
+                  dados.vendedor$scoreIntel,
+                  dados.vendedor$vendas)
   
-  colnames(dados) <- c("mes", 
-                       "quantidadeProduto", 
-                       "grupoMilkShake", 
-                       "grupoSanduiche",
-                       "grupoBebida",
-                       "grupoAcompanhamento",
-                       "grupoPrato",
-                       "grupoAdicional",
-                       "grupoBrinde",
-                       "venda")
+  colnames(dados) <- c("vendedor",
+                       "anoExp", 
+                       "scoreIntel",
+                       "vendas")
   
   #
   # Conjunto de Treinamento
   #
-  training.setOriginal <<- dados[1:85, ]
+  training.setOriginal <<- dados[1:8, ]
   training.set <- training.setOriginal
-  training.set[,"mes"] <- as.double(training.set[,"mes"])
   training.set <- scale(training.set)
   training.set <<- as.data.frame(training.set)
   
   #
   # Conjunto de Teste
   #
-  test.setOriginal <<- dados[85:90, ]
+  test.setOriginal <<- dados[8:12, ]
   test.set <- test.setOriginal
-  test.set[,"mes"] <- as.double(test.set[,"mes"])
   test.set <- scale(test.set)
   test.set <<- as.data.frame(test.set)
 }
@@ -69,19 +55,13 @@ loadDataSet <- function()
 #
 fitModelNeuralNetworkELM <- function(training.set)
 {
-  fit.neural.network <- elmtrain(venda ~ 
-                        mes +
-                        quantidadeProduto  +
-                        grupoMilkShake + 
-                        grupoSanduiche + 
-                        grupoBebida +
-                        grupoAcompanhamento +
-                        grupoPrato + 
-                        grupoAdicional, 
-                        data=training.set, 
-                        nhid=10, 
-                        actfun="purelin")
-
+  fit.neural.network <- elmtrain(vendas ~ 
+                                   anoExp +
+                                   scoreIntel, 
+                                   data=training.set, 
+                                   nhid=10, 
+                                   actfun="purelin")
+  
   return(fit.neural.network)
 }
 
@@ -110,13 +90,11 @@ scaleToOriginal <- function(value, scale.value)
 #
 # Funcao - Coletar conjunto de Dados - Real vs Previsto
 #
-getDataSet.RealvsPrevisto <- function(real, previsto)
+getDataSet.RealvsPrevisto <- function(real, previsto,vendedor)
 {
   previsto.fit = scaleToOriginal(real,previsto)
-  data <- seq(as.Date("2017/1/1"), by = "month", length.out = 6)
-  periodo <- as.Date(data , "%m/%d/%y")
-  result = cbind.data.frame(real, previsto.fit, periodo)
-  colnames(result) = c("real", "previsto","periodo")
+  result = cbind.data.frame(vendedor, real, previsto.fit)
+  colnames(result) = c("vendedor", "real", "previsto")
   return(result)
 }
 
@@ -137,18 +115,18 @@ getMape <- function(data.set)
 plotNeuralNetworkELM <- function(ds.resultado)
 {
   f <- list(family = "Verdana", size = 14, color = "#000000")
-  x <- list( title = "Período", titlefont = f)
+  x <- list( title = "Vendedor", titlefont = f)
   y <- list(title = "Venda (R$)", titlefont = f)
   
   p <- plot_ly(as.data.frame(ds.resultado), 
-               x = ~periodo,
+               x = ~vendedor,
                y = ~real, 
                name = "Real", 
                type = "scatter",
                mode = "lines") %>%
     layout(xaxis = x, yaxis = y)  %>%
     add_trace(y = ~previsto, 
-              line = list(color = 'rgb(121, 85, 72)', width = 3),
+              line = list(color = 'rgb(255, 87, 34)', width = 3),
               name = "Modelo Rede Neural SLFN - ELM", 
               connectgaps = TRUE)
   p
@@ -165,9 +143,10 @@ fit.neural.network <- fitModelNeuralNetworkELM(training.set)
 predict.neural.network <- predictNeuralNetworkELM(fit.neural.network, test.set)
 
 #Gerar Conjunto de Dados - Real vs Previsto
-real <- test.setOriginal[,"venda"]
+real <- test.setOriginal[,"vendas"]
+vendedor <- test.setOriginal[,"vendedor"]
 previsto <- predict.neural.network
-ds.resultado <- getDataSet.RealvsPrevisto(real, previsto)
+ds.resultado <- getDataSet.RealvsPrevisto(real, previsto,vendedor)
 
 #Erro Percentual Absoluto Médio
 getMape(ds.resultado)
@@ -178,7 +157,3 @@ plotNeuralNetworkELM(ds.resultado)
 
 previsto <- ds.resultado[,"previsto"]
 real <- ds.resultado[,"real"]
-
-dif <- previsto - real
-sum(previsto)
-sum(real)

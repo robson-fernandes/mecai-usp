@@ -10,16 +10,16 @@ rm(list=ls())
 graphics.off()
 
 #
-# Pacotes - 
+# Pacotes
 #
 # <bnlearn>
-# Pacote Análise e Inferência em Redes Bayesianas
+# Pacote de Análise e Inferência em Redes Bayesianas
 #
 # <StatMeasures>
-# Pacote de verificacoes estatisticas
+# Pacote de verificações estatísticas
 #
 # <plotly>
-# Pacote de visualizacao de dados
+# Pacote de visualização de dados
 #
 library(bnlearn)
 library(StatMeasures)
@@ -62,6 +62,7 @@ loadDataSet <- function()
   #
   training.setOriginal <<- dados[1:85, ]
   training.set <- training.setOriginal
+  
   training.set[,"mes"] <- as.double(training.set[,"mes"])
   training.set <- scale(training.set)
   training.set <<- as.data.frame(training.set)
@@ -71,6 +72,7 @@ loadDataSet <- function()
   #
   test.setOriginal <<- dados[85:90, ]
   test.set <- test.setOriginal
+  
   test.set[,"mes"] <- as.double(test.set[,"mes"])
   test.set <- scale(test.set)
   test.set <<- as.data.frame(test.set)
@@ -82,29 +84,18 @@ loadDataSet <- function()
 #
 fitModelBayesianNetworkMMHC <- function(training.set)
 {
-  bayesian.mmhc <- mmhc(training.set)
-  
-  bayesian.mmhc <- set.arc(bayesian.mmhc, "mes", "quantidadeProduto")
-  bayesian.mmhc <- set.arc(bayesian.mmhc, "quantidadeProduto", "venda")
-  bayesian.mmhc <- set.arc(bayesian.mmhc, "grupoSanduiche", "venda")
-  bayesian.mmhc <- set.arc(bayesian.mmhc, "grupoMilkShake", "venda")
-  bayesian.mmhc <- set.arc(bayesian.mmhc, "grupoAcompanhamento", "venda")
-  
-  bayesian.mmhc <- drop.arc(bayesian.mmhc, "venda", "mes")
-  bayesian.mmhc <- drop.arc(bayesian.mmhc, "grupoBrinde", "venda")
-  bayesian.mmhc <- drop.arc(bayesian.mmhc, "quantidadeProduto", "grupoAcompanhamento")
-  bayesian.mmhc <- drop.arc(bayesian.mmhc, "quantidadeProduto", "grupoMilkShake")
-  bayesian.mmhc <- drop.arc(bayesian.mmhc, "quantidadeProduto", "grupoSanduiche")
-  bayesian.mmhc <- drop.arc(bayesian.mmhc, "grupoSanduiche", "grupoMilkShake")
+  bayesian.mmhc <- bnlearn::mmhc(training.set)
+  bayesian.mmhc <<- bayesian.mmhc
   
   plot(bayesian.mmhc)
   
   fit.bayesian.mmhc <- bn.fit(bayesian.mmhc, data = training.set, method="mle")
+  
   return(fit.bayesian.mmhc)
 }
 
 #
-# Funcao - Predicao - Rede Bayesiana Gaussiana - MMHC
+# Funcao - Predição - Rede Bayesiana Gaussiana - MMHC
 #
 predictBayesianNetworkMMHC <- function(fit.bayesian.mmhc, test.set)
 {
@@ -113,7 +104,7 @@ predictBayesianNetworkMMHC <- function(fit.bayesian.mmhc, test.set)
 }
 
 #
-# Funcao - Conversao de Valores normalizados em escala para Original
+# Funcao - Conversão de valores normalizados em escala para original
 #
 scaleToOriginal <- function(value, scale.value)
 {
@@ -139,7 +130,7 @@ getDataSet.RealvsPrevisto <- function(real, previsto)
 }
 
 #
-# Funcao - Erro Percentual Absoluto Medio
+# Funcao - Erro Percentual Absoluto Médio
 #
 getMape <- function(data.set)
 {
@@ -149,7 +140,7 @@ getMape <- function(data.set)
 }
 
 #
-# Funcao - Visualizar grafico do modelo
+# Funcao - Visualizar gráfico do modelo
 #
 plotBGLM <- function(ds.resultado)
 {
@@ -177,15 +168,16 @@ loadDataSet()
 #Ajuste Modelo - Modelo Rede Bayesiana Gaussiana - MMHC
 fit.bayesian.mmhc <- fitModelBayesianNetworkMMHC(training.set)
 
-#Predicao - Modelo Rede Bayesiana Gaussiana - MMHC
-predict.bayesian.mmhc <- predictBayesianNetworkMMHC(fit.bayesian.mmhc, test.set)
+#Predição - Modelo Rede Bayesiana Gaussiana - MMHC
+predict.bayesian.mmhc <- predictBayesianNetworkMMHC(fit.bayesian.mmhc, test.set[1:9])
 
 #Gerar Conjunto de Dados - Real vs Previsto
 real <- test.setOriginal[,"venda"]
 previsto <- predict.bayesian.mmhc
 ds.resultado <- getDataSet.RealvsPrevisto(real, previsto)
 
-#Erro Percentual Absoluto Medio
+
+#Erro Percentual Absoluto Médio
 getMape(ds.resultado)
 
 # Visualizar Gráfico do Modelo
@@ -194,5 +186,7 @@ plotBGLM(ds.resultado)
 
 previsto <- ds.resultado[,"previsto"]
 real <- ds.resultado[,"real"]
+
+dif <- previsto - real
 sum(previsto)
 sum(real)
