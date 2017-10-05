@@ -18,32 +18,40 @@ library(caret)
 #
 # Funcao - Carregar conjunto de Dados
 #
-dados.grupos <- read.table("dados-grupos.csv", 
+dados.grupos <- read.table("dados-new.csv", 
                            header=TRUE, 
                            sep=";")
 attach(dados.grupos)
 
 dados <-  cbind(dados.grupos$mes, 
-                dados.grupos$quantidadeProduto,
-                dados.grupos$grupoMilkShake, 
-                dados.grupos$grupoSanduiche, 
-                dados.grupos$grupoBebida,
-                dados.grupos$grupoAcompanhamento,
-                dados.grupos$grupoPrato,
-                dados.grupos$grupoAdicional,
-                dados.grupos$grupoBrinde,
-                dados.grupos$venda)
+                dados.grupos$venda, 
+                dados.grupos$grupoCarne,
+                dados.grupos$grupoUniforme, 
+                dados.grupos$grupoEmbalagem, 
+                dados.grupos$grupoUsoConsumo,
+                dados.grupos$grupoHortiFrutti,
+                dados.grupos$grupoPaes,
+                dados.grupos$grupoBebidas,
+                dados.grupos$grupoSobremesas,
+                dados.grupos$grupoMolhos,
+                dados.grupos$grupoFrios,
+                dados.grupos$grupoSecos
+)
 
 colnames(dados) <- c("mes", 
-                     "quantidadeProduto", 
-                     "grupoMilkShake", 
-                     "grupoSanduiche",
-                     "grupoBebida",
-                     "grupoAcompanhamento",
-                     "grupoPrato",
-                     "grupoAdicional",
-                     "grupoBrinde",
-                     "venda")
+                     "venda", 
+                     "grupoCarne",
+                     "grupoUniforme", 
+                     "grupoEmbalagem",
+                     "grupoUsoConsumo",
+                     "grupoHortiFrutti",
+                     "grupoPaes",
+                     "grupoBebidas",
+                     "grupoSobremesas",
+                     "grupoMolhos",
+                     "grupoFrios",
+                     "grupoSecos"
+)
 
 #
 # Conjunto de Treinamento
@@ -57,21 +65,27 @@ data.set <<- as.data.frame(data.set)
 ctrl<-trainControl(method = "cv",number = 10)
 
 
-lmFit <- train(venda ~
-               mes +   
-               quantidadeProduto +
-               grupoMilkShake + 
-               grupoSanduiche + 
-               grupoBebida +
-               grupoAcompanhamento + 
-               grupoPrato +
-               grupoAdicional + 
-               grupoBrinde, 
+lmFit <- train(venda ~ 
+                 mes +
+                 grupoBebidas +
+                 grupoCarne  +
+                 grupoUniforme +
+                 grupoHortiFrutti +
+                 grupoPaes + 
+                 grupoSobremesas +
+                 grupoMolhos +
+                 grupoFrios,
                data = data.set, 
                metric="Rsquared",
                trControl = ctrl,
                method = "lm")
 
 v <- varImp(lmFit)
-
-ggplot(v) 
+v
+ggplot(v) +
+  xlab("Variável") +
+  ylab("Importância") +
+  ggtitle("Análise de Variáveis Importantes") + 
+  geom_density(alpha=0.25) +
+  geom_bar(stat="identity", fill="#9e8cbe", colour="#9e8cbe") +
+  theme(plot.title = element_text(hjust = 0.5)) 

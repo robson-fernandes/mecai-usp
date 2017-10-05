@@ -1,5 +1,5 @@
 # ------------------------------------------
-# Rede Bayesiana Gaussiana - Manual
+# Rede Bayesiana Gaussiana - MMHC
 # ------------------------------------------
 
 #
@@ -25,37 +25,91 @@ library(bnlearn)
 library(StatMeasures)
 library(plotly)
 
+outlierKD <- function(dt, var) {
+  var_name <- eval(substitute(var),eval(dt))
+  na1 <- sum(is.na(var_name))
+  m1 <- mean(var_name, na.rm = T)
+  par(mfrow=c(2, 2), oma=c(0,0,3,0))
+  boxplot(var_name, main="With outliers")
+  hist(var_name, main="With outliers", xlab=NA, ylab=NA)
+  outlier <- boxplot.stats(var_name)$out
+  mo <- mean(outlier)
+  var_name <- ifelse(var_name %in% outlier, NA, var_name)
+  boxplot(var_name, main="Without outliers")
+  hist(var_name, main="Without outliers", xlab=NA, ylab=NA)
+  title("Outlier Check", outer=TRUE)
+  na2 <- sum(is.na(var_name))
+  cat("Outliers identified:", na2 - na1, "n")
+  cat("Propotion (%) of outliers:", round((na2 - na1) / sum(!is.na(var_name))*100, 1), "n")
+  cat("Mean of the outliers:", round(mo, 2), "n")
+  m2 <- mean(var_name, na.rm = T)
+  cat("Mean without removing outliers:", round(m1, 2), "n")
+  cat("Mean if we remove outliers:", round(m2, 2), "n")
+  response <- "y" #readline(prompt="Do you want to remove outliers and to replace with NA? [yes/no]: ")
+  if(response == "y" | response == "yes"){
+    dt[as.character(substitute(var))] <- invisible(var_name)
+    assign(as.character(as.list(match.call())$dt), dt, envir = .GlobalEnv)
+    cat("Outliers successfully removed", "n")
+    return(dt)
+  } else{
+    cat("Nothing changed", "n")
+    return(invisible(var_name))
+  }
+}
+
+
+remove_outliers <- function(x, na.rm = TRUE, ...) {
+  qnt <- quantile(x, probs=c(.25, .75), na.rm = na.rm, ...)
+  H <- 1.5 * IQR(x, na.rm = na.rm)
+  y <- x
+  y[x < (qnt[1] - H)] <- NA
+  y[x > (qnt[2] + H)] <- NA
+  
+  NA2median <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
+  
+  NA2median(y)
+}
+
+
+
 #
 # Funcao - Carregar conjunto de Treinamento e Teste
 #
 loadDataSet <- function()
 {
-  dados.grupos <- read.table("dados-grupos.csv", 
-                             header=TRUE, 
-                             sep=";")
+  dados.grupos <<- read.table("dados-new.csv", 
+                              header=TRUE, 
+                              sep=";")
   attach(dados.grupos)
   
+  
   dados <-  cbind(dados.grupos$mes, 
-                  dados.grupos$quantidadeProduto,
-                  dados.grupos$grupoMilkShake, 
-                  dados.grupos$grupoSanduiche, 
-                  dados.grupos$grupoBebida,
-                  dados.grupos$grupoAcompanhamento,
-                  dados.grupos$grupoPrato,
-                  dados.grupos$grupoAdicional,
-                  dados.grupos$grupoBrinde,
-                  dados.grupos$venda)
+                  dados.grupos$venda, 
+                  dados.grupos$grupoCarne,
+                  dados.grupos$grupoEmbalagem, 
+                  dados.grupos$grupoHortiFrutti,
+                  dados.grupos$grupoPaes,
+                  dados.grupos$grupoBebidas,
+                  dados.grupos$grupoSobremesas,
+                  dados.grupos$grupoMolhos,
+                  dados.grupos$grupoFrios,
+                  dados.grupos$grupoSecos
+  )
+  
   
   colnames(dados) <- c("mes", 
-                       "quantidadeProduto", 
-                       "grupoMilkShake", 
-                       "grupoSanduiche",
-                       "grupoBebida",
-                       "grupoAcompanhamento",
-                       "grupoPrato",
-                       "grupoAdicional",
-                       "grupoBrinde",
-                       "venda")
+                       "venda", 
+                       "grupoCarne",
+                       "grupoEmbalagem",
+                       "grupoHortiFrutti",
+                       "grupoPaes",
+                       "grupoBebidas",
+                       "grupoSobremesas",
+                       "grupoMolhos",
+                       "grupoFrios",
+                       "grupoSecos"
+  )
+  
   
   #
   # Conjunto de Treinamento
@@ -80,45 +134,23 @@ loadDataSet <- function()
 
 
 #
-# Funcao - Ajuste Modelo - Rede Bayesiana Gaussiana - Manual
+# Funcao - Ajuste Modelo - Rede Bayesiana Gaussiana - MMHC
 #
 fitModelBayesianNetworkMMHC <- function(training.set)
 {
-  modelstring = paste("[mes][quantidadeProduto|mes][grupoPrato][grupoMilkShake][grupoSanduiche][grupoAdicional|grupoSanduiche][grupoBebida|grupoSanduiche]",
-                      "[grupoAcompanhamento|grupoSanduiche]",
-                      "[venda|mes:quantidadeProduto:grupoMilkShake:grupoSanduiche:grupoBebida:grupoAcompanhamento:grupoPrato][grupoBrinde|grupoSanduiche]", sep = "")
+  
+  modelstring = paste("[mes][grupoBebidas][grupoCarne][grupoEmbalagem][grupoHortiFrutti][grupoPaes][grupoSobremesas][grupoMolhos][grupoFrios][grupoSecos]",
+                      "[venda|mes:grupoBebidas:grupoCarne:grupoEmbalagem:grupoHortiFrutti:grupoPaes:grupoSobremesas:grupoMolhos:grupoFrios:grupoSecos]", sep = "")
   manual.model = model2network(modelstring)
-
+  
   plot(manual.model)
   
   fit.bayesian.mmhc <- bn.fit(manual.model, data = training.set, method="mle")
   
-  fit.bayesian.mmhc$venda = lm(venda ~
-                                  mes +
-                                  quantidadeProduto +
-                                  grupoMilkShake + 
-                                  grupoSanduiche + 
-                                  grupoBebida +
-                                  grupoAcompanhamento + 
-                                  grupoPrato,
-                                  family=gaussian,
-                                  data= training.set)
+  fit.bayesian.mmhc$venda = glm(venda ~ mes + grupoBebidas + grupoCarne + grupoEmbalagem + grupoFrios + grupoHortiFrutti + grupoMolhos + grupoPaes + grupoSecos + grupoSobremesas,
+                               family=gaussian(link = "identity"),
+                               data= training.set)
 
-  coefficients(fit.bayesian.mmhc$venda)
-  
-  library("rbmn")
-  
-  my.bn.par.rbmn <- bnfit2nbn(fit.bayesian.mmhc)
-  
-  print8nbn(my.bn.par.rbmn)
-  
-  
-  #bn.fit.qqplot(fit.bayesian.mmhc,main = "Normal Q-Q Plot", xlab = )
-  #bn.fit.histogram(fit.bayesian.mmhc, 
-  #                 main = "Histograma de Residuos",
-  #                 xlab = "Residuos",
-  #                 ylab = "Densidade")
-  #bn.fit.xyplot(fit.bayesian.mmhc)
   
   return(fit.bayesian.mmhc)
 }
@@ -182,6 +214,7 @@ plotBGLM <- function(ds.resultado)
                y = ~real, 
                name = "Real", 
                type = "scatter",
+               line = list(shape = "spline"),
                mode = "lines") %>%
     layout(xaxis = x, yaxis = y)  %>%
     add_trace(y = ~previsto, 
@@ -198,7 +231,7 @@ loadDataSet()
 fit.bayesian.mmhc <- fitModelBayesianNetworkMMHC(training.set)
 
 #Predição - Modelo Rede Bayesiana Gaussiana - MMHC
-predict.bayesian.mmhc <- predictBayesianNetworkMMHC(fit.bayesian.mmhc, test.set[1:9])
+predict.bayesian.mmhc <- predictBayesianNetworkMMHC(fit.bayesian.mmhc, test.set[1:11])
 
 #Gerar Conjunto de Dados - Real vs Previsto
 real <- test.setOriginal[,"venda"]

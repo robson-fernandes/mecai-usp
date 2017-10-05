@@ -19,7 +19,7 @@ grupoMilkShake <-dados.grupos$grupoMilkShake
 #Se p-value > 0.05, a distribuição é normal.
 shapiro.test(grupoMilkShake)
 
-grupoMilkShake.new <- (grupoMilkShake - mean(grupoMilkShake)) / sd(grupoMilkShake)
+grupoMilkShake.new <- scale(grupoMilkShake)
 
 shapiro.test(grupoMilkShake.new)
 

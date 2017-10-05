@@ -51,9 +51,9 @@ loadDataSet <- function()
 }
 
 #
-# Funcao - Ajuste Modelo - Rede Neural ELM
+# Funcao - Ajuste Modelo - Rede Neural MLP - BackPropagation
 #
-fitModelNeuralNetworkELM <- function(training.set)
+fitModelNeuralNetworkMLP <- function(training.set)
 {
   formula <- as.formula('vendas  ~ 
                           anoExp +
@@ -77,9 +77,9 @@ fitModelNeuralNetworkELM <- function(training.set)
 }
 
 #
-# Funcao - Predição - Rede Neural ELM
+# Funcao - Predição - Rede Neural MLP - BackPropagation
 #
-predictNeuralNetworkELM <- function(fit.neural.network, test.set)
+predictNeuralNetworkMLP <- function(fit.neural.network, test.set)
 {
   predict.neural.network <- compute(fit.neural.network,test.set)
   return(predict.neural.network)
@@ -123,7 +123,7 @@ getMape <- function(data.set)
 #
 # Funcao - Visualizar gráfico do modelo
 #
-plotNeuralNetworkELM <- function(ds.resultado)
+plotNeuralNetworkMLP <- function(ds.resultado)
 {
   f <- list(family = "Verdana", size = 14, color = "#000000")
   x <- list( title = "Vendedor", titlefont = f)
@@ -147,11 +147,11 @@ plotNeuralNetworkELM <- function(ds.resultado)
 # Carrega conjunto de treinamento e teste
 loadDataSet()
 
-#Ajuste Modelo - Rede Neural ELM
-fit.neural.network <- fitModelNeuralNetworkELM(training.set)
+#Ajuste Modelo - Rede Neural MLP - BackPropagation
+fit.neural.network <- fitModelNeuralNetworkMLP(training.set)
 
-#Predição - Rede Neural ELM
-predict.neural.network <- predictNeuralNetworkELM(fit.neural.network, test.set[2:3])
+#Predição - Rede Neural  MLP - BackPropagation
+predict.neural.network <- predictNeuralNetworkMLP(fit.neural.network, test.set[2:3])
 
 #Gerar Conjunto de Dados - Real vs Previsto
 real <- test.setOriginal[,"vendas"]
@@ -162,8 +162,8 @@ ds.resultado <- getDataSet.RealvsPrevisto(real, previsto,vendedor)
 #Erro Percentual Absoluto Médio
 getMape(ds.resultado)
 
-# Visualizar Gráfico do Modelo
-plotNeuralNetworkELM(ds.resultado)
+#Visualizar Gráfico do Modelo
+plotNeuralNetworkMLP(ds.resultado)
 
 
 previsto <- ds.resultado[,"previsto"]

@@ -72,8 +72,8 @@ data.set.melt <- melt(data.set)
 
 #Diagrama de Densidade - Todas as variáveis
 ggplot(data.set.melt,aes(x=value, fill=variable)) +
-scale_y_continuous(name = "Densidade") +
-scale_x_continuous(name = "Valor") +
+xlab("Valor") +
+ylab("Densidade") +
 ggtitle("Diagrama de Densidade") +
 theme(plot.title = element_text(hjust = 0.5)) +
 geom_density(alpha=0.25) +
