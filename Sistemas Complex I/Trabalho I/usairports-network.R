@@ -11,7 +11,7 @@ graphics.off()
 #
 # 1 - Leitura da Rede
 #
-str = 'euroroad'
+str = 'USairports'
 net <- read.table(paste(str,'.txt', sep = ''))
 
 if(dim(net)[2] > 2){
@@ -25,6 +25,7 @@ G <- graph.data.frame(net, directed=FALSE)
 G = graph_from_edgelist(net, directed = FALSE)
 
 plot(G, vertex.size=4, vertex.label = NA)
+
 #
 # 2 - Extrair o maior componente da rede
 #
@@ -40,7 +41,6 @@ G = simplify(G)
 # Plotagem da Rede com maior Componente
 plot(G, vertex.size=4, vertex.label = NA)
 
-
 kMaximo <- max(degree(G))
 kMaximo
 
@@ -53,7 +53,7 @@ plot(x=0:kMaximo,y=deg.distc, pch=19, cex=1.2,
      ylab="Frequencia",
      type="p",
      col="blue",
-     main = "Rede Euro Road - Distribuição do Grau")
+     main = "Rede US Airports - Distribuição do Grau")
 
 N = vcount(G) #number of vertices
 M = ecount(G) #number of edges
