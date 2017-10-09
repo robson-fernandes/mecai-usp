@@ -136,7 +136,15 @@ mtext("Menores Caminhos")
 #7 - ENTROPIA DE SHANNON
 E(G)$weight <- runif(ecount(G))
 hamster.network <- graph.diversity(G)
-hist(hamster.network)
+hamster.network = hamster.network[!is.na(hamster.network)];
+length(hamster.network)
+hist(hamster.network,
+     col="royalblue1",
+     border="white",
+     freq = F,
+     ylab = "Frequencia",
+     xlab = "Shannon entropy (escala)",
+     main = "Rede - Hamsterster - Histograma de Diversidade")
 
 # betweenness centrality
 bt = betweenness(G)

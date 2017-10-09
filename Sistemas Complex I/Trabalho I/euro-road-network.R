@@ -136,7 +136,16 @@ mtext("Menores Caminhos")
 #7 - ENTROPIA DE SHANNON
 E(G)$weight <- runif(ecount(G))
 euroroad.network <- graph.diversity(G)
-hist(euroroad.network)
+euroroad.network = euroroad.network[!is.na(euroroad.network)];
+length(euroroad.network)
+hist(euroroad.network,
+     col="royalblue1",
+     border="white",
+     freq = F,
+     ylab = "Frequencia",
+     xlab = "Shannon entropy (escala)",
+     main = "Rede - Euro Road - Histograma de Diversidade")
+
 
 # betweenness centrality
 bt = betweenness(G)

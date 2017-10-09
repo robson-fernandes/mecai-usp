@@ -135,7 +135,15 @@ mtext("Menores Caminhos")
 E(G)$weight <- runif(ecount(G))
 usairports.network <- graph.diversity(G)
 usairports.network = usairports.network[!is.na(usairports.network)];
-hist(usairports.network)
+length(usairports.network)
+hist(usairports.network,
+     col="royalblue1",
+     border="white",
+     freq = F,
+     ylab = "Frequencia",
+     xlab = "Shannon entropy (escala)",
+     main = "Rede - US Airports - Histograma de Diversidade")
+
 
 # betweenness centrality
 bt = betweenness(G)

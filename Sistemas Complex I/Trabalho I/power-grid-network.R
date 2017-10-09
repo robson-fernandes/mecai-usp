@@ -133,9 +133,16 @@ mtext("Menores Caminhos")
 
 #7 - ENTROPIA DE SHANNON
 E(G)$weight <- runif(ecount(G))
-powergrid.network <-diversity(G)
+powergrid.network <- graph.diversity(G)
 powergrid.network = powergrid.network[!is.na(powergrid.network)];
-hist(powergrid.network)
+length(powergrid.network)
+hist(powergrid.network,
+     col="royalblue1",
+     border="white",
+     freq = F,
+     ylab = "Frequencia",
+     xlab = "Shannon entropy (escala)",
+     main = "Rede - Power Grid - Histograma de Diversidade")
 
 # betweenness centrality
 bt = betweenness(G)
