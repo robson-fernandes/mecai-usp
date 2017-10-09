@@ -192,3 +192,35 @@ hist(pr,
 mtext("Page Rank")
 lines(density(pr, na.rm = T, from =0, to = max(pr, na.rm = T)),
       col="red")
+
+#8 - ANÁLISE DE CORRELAÇÃO 
+
+#Correlação de Person
+medidas <- data.frame("Betweenness" = bt, 
+                      "Closeness" = c, 
+                      "Eignevector" = eg,
+                      "PageRank" = pr
+)
+# Teste de Correlação - Betweenness
+cor(medidas[,'Betweenness'], medidas[,'Betweenness'])
+cor(medidas[,'Betweenness'], medidas[,'Closeness'])
+cor(medidas[,'Betweenness'], medidas[,'Eignevector'])
+cor(medidas[,'Betweenness'], medidas[,'PageRank'])
+
+# Teste de Correlação - Closeness
+cor(medidas[,'Closeness'], medidas[,'Closeness'])
+cor(medidas[,'Closeness'], medidas[,'Betweenness'])
+cor(medidas[,'Closeness'], medidas[,'Eignevector'])
+cor(medidas[,'Closeness'], medidas[,'PageRank'])
+
+# Teste de Correlação - Eignevector
+cor(medidas[,'Eignevector'], medidas[,'Eignevector'])
+cor(medidas[,'Eignevector'], medidas[,'Betweenness'])
+cor(medidas[,'Eignevector'], medidas[,'Closeness'])
+cor(medidas[,'Eignevector'], medidas[,'PageRank'])
+
+# Teste de Correlação - PageRank
+cor(medidas[,'PageRank'], medidas[,'PageRank'])
+cor(medidas[,'PageRank'], medidas[,'Betweenness'])
+cor(medidas[,'PageRank'], medidas[,'Closeness'])
+cor(medidas[,'PageRank'], medidas[,'Eignevector'])
