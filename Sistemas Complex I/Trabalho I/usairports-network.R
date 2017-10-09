@@ -227,15 +227,59 @@ cor(medidas[,'PageRank'], medidas[,'Eignevector'])
 # BETWEENNESS
 #------------------------------------------------------------
 #------------------------------------------------------------
-# Correlação - Betweenness Centrality x Closeness Centrality
-plot(bt, c, 
+# Correlação - Eigenvector Centrality x PageRank
+# {Eigenvector Centrality x PageRank} 
+# indica correlação de 0.837
+plot(eg, pr, 
      col="royalblue1",
      main="Rede - US Airports - Análise de Correlação", 
-     xlab="Betweenness Centrality",
+     xlab="Eigenvector Centrality",
+     ylab="PageRank",
+     pch=19)
+mtext("Eigenvector Centrality x PageRank")
+abline(lm(pr~eg), col="red")
+lines(lowess(eg,pr), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
+
+# {Closeness Centrality x Eigenvector Centrality} 
+# indica correlação de 0.751
+plot(c, eg, 
+     col="royalblue1",
+     main="Rede - US Airports - Análise de Correlação", 
+     xlab="Closeness Centrality",
+     ylab="Eigenvector Centrality",
+     pch=19)
+mtext("Closeness Centrality x Eigenvector Centrality")
+abline(lm(eg~c), col="red")
+lines(lowess(c,eg), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
+
+# {PageRank x Betweenness Centrality} 
+# indica correlação de 0.689
+plot(pr, bt, 
+     col="royalblue1",
+     main="Rede - US Airports - Análise de Correlação", 
+     xlab="PageRank",
+     ylab="Betweenness Centrality",
+     pch=19)
+mtext("PageRank x Betweenness Centrality")
+abline(lm(bt~pr), col="red")
+lines(lowess(pr,bt), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
+
+#{PageRank x Closeness Centrality} 
+# indica correlação de 0.635
+plot(pr, c, 
+     col="royalblue1",
+     main="Rede - US Airports - Análise de Correlação", 
+     xlab="PageRank",
      ylab="Closeness Centrality",
      pch=19)
-mtext("Betweenness Centrality x Closeness Centrality")
-abline(lm(c~bt), col="red")
-lines(lowess(bt,c), col="green", type="b") 
+mtext("PageRank x Closeness Centrality")
+abline(lm(c~pr), col="red")
+lines(lowess(pr,c), col="green", type="b") 
 legend("bottomright", legend=c("Regression Line", "Lowess Line"),
        col=c("red", "green"), lty=1:2, cex=0.8)

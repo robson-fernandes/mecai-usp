@@ -222,3 +222,17 @@ cor(medidas[,'PageRank'], medidas[,'PageRank'])
 cor(medidas[,'PageRank'], medidas[,'Betweenness'])
 cor(medidas[,'PageRank'], medidas[,'Closeness'])
 cor(medidas[,'PageRank'], medidas[,'Eignevector'])
+
+# {Betweenness Centrality x Closeness Centrality} 
+# indica correlação de 0.353
+plot(bt, c, 
+     col="royalblue1",
+     main="Rede - Power Grid - Análise de Correlação", 
+     xlab="Betweenness Centrality",
+     ylab="Closeness Centrality",
+     pch=19)
+mtext("Betweenness Centrality x Closeness Centrality")
+abline(lm(c~bt), col="red")
+lines(lowess(bt,c), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)

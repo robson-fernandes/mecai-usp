@@ -224,3 +224,17 @@ cor(medidas[,'PageRank'], medidas[,'PageRank'])
 cor(medidas[,'PageRank'], medidas[,'Betweenness'])
 cor(medidas[,'PageRank'], medidas[,'Closeness'])
 cor(medidas[,'PageRank'], medidas[,'Eignevector'])
+
+# {Betweenness Centrality x PageRank} 
+# indica correlação de 0.395
+plot(bt, pr, 
+     col="royalblue1",
+     main="Rede - Euro Road - Análise de Correlação", 
+     xlab="Betweenness Centrality",
+     ylab="PageRank",
+     pch=19)
+mtext("Betweenness Centrality x PageRank")
+abline(lm(pr~bt), col="red")
+lines(lowess(bt,pr), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
