@@ -231,3 +231,62 @@ cor(medidas[,'PageRank'], medidas[,'PageRank'])
 cor(medidas[,'PageRank'], medidas[,'Betweenness'])
 cor(medidas[,'PageRank'], medidas[,'Closeness'])
 cor(medidas[,'PageRank'], medidas[,'Eignevector'])
+
+# {PageRank x Betweenness Centrality} 
+# indica correlação de 0.875
+plot(pr, bt, 
+     col="royalblue1",
+     main="Rede - Hamsterster - Análise de Correlação", 
+     xlab="PageRank",
+     ylab="Betweenness Centrality",
+     pch=19)
+mtext("PageRank x Betweenness Centrality")
+abline(lm(bt~pr), col="red")
+lines(lowess(pr,bt), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
+
+
+# {Eigenvector Centrality x PageRank} 
+# indica correlação de 0.830
+plot(eg, pr, 
+     col="royalblue1",
+     main="Rede - Hamsterster - Análise de Correlação", 
+     xlab="Eigenvector Centrality",
+     ylab="PageRank",
+     pch=19)
+mtext("Eigenvector Centrality x PageRank")
+abline(lm(pr~eg), col="red")
+lines(lowess(eg,pr), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
+
+
+# {Closeness Centrality x Eigenvector Centrality} 
+# indica correlação de 0.702
+plot(c, eg, 
+     col="royalblue1",
+     main="Rede - Hamsterster - Análise de Correlação", 
+     xlab="Closeness Centrality",
+     ylab="Eigenvector Centrality",
+     pch=19)
+mtext("Closeness Centrality x Eigenvector Centrality")
+abline(lm(eg~c), col="red")
+lines(lowess(c,eg), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
+
+
+# {Eigenvector Centrality x Betweenness Centrality} 
+# indica correlação de 0.633
+plot(eg, bt, 
+     col="royalblue1",
+     main="Rede - Hamsterster - Análise de Correlação", 
+     xlab="Eigenvector Centrality",
+     ylab="Betweenness Centrality",
+     pch=19)
+mtext("Eigenvector Centrality x Betweenness Centrality")
+abline(lm(bt~eg), col="red")
+lines(lowess(eg,bt), col="green", type="b") 
+legend("bottomright", legend=c("Regression Line", "Lowess Line"),
+       col=c("red", "green"), lty=1:2, cex=0.8)
