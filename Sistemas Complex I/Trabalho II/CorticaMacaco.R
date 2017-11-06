@@ -109,6 +109,9 @@ crtmplot <- ggplot(crtmtabela, aes(x = crtmgrau, y = crtmknn$knn)) +
 
 crtmplot
 
+#COEFICIENTE DE CORRELAÇÃO
+cor(crtmgrau, crtmknn$knn)
+
 #
 # 14 - Calculando comunidades 
 #Walktrap

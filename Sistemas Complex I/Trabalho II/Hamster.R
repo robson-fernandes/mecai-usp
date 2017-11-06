@@ -109,6 +109,9 @@ hamplot <- ggplot(hamtabela, aes(x = hamgrau, y = hamknn$knn)) +
 
 hamplot
 
+#COEFICIENTE DE CORRELAÇÃO
+cor(hamgrau, hamknn$knn)
+
 #
 # 14 - Calculando comunidades 
 #Walktrap

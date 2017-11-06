@@ -110,6 +110,10 @@ europlot <- ggplot(eurotabela, aes(x = eurograu, y = euroknn$knn)) +
 
 europlot
 
+#COEFICIENTE DE CORRELAÇÃO
+cor(eurograu, euroknn$knn)
+
+
 #
 # 14 - Calculando comunidades 
 #Walktrap

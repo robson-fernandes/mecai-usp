@@ -110,6 +110,9 @@ usaplot <- ggplot(ustabela, aes(x = usagrau, y = usaknn$knn)) +
 
 usaplot
 
+#COEFICIENTE DE CORRELAÇÃO
+cor(usagrau, usaknn$knn)
+
 #
 # 14 - Calculando comunidades 
 #Walktrap

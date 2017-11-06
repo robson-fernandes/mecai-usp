@@ -150,5 +150,5 @@ plot(mu, l_v, type = "l", col = "red", ylab = "NMI", xlab = "Mu",
 lines(mu, c_f, type = "l", col = "blue")
 lines(mu, c_w, type = "l", col = "orange")
 lines(mu, c_b, type = "l", col = "yellow")
-legend("bottomright", legend = c("Eigenvectors", "Fast-greedy", "Walktrap", "Betweenness"),
+legend("topright", legend = c("Eigenvectors", "Fast-greedy", "Walktrap", "Betweenness"),
        col = c("red","blue","orange","yellow"), lty = 1:4, cex = 0.8)
