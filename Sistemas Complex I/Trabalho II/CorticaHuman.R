@@ -87,16 +87,20 @@ crthdegdist <- degree_distribution(crthgraf,mode="all",
 #
 crthgrau <- degree(crthgraf, mode = "all")
 
+
 #
 # 12 - Criando uma tabela para plotar no ggplot
 #
-crthtabela = cbind.data.frame(crthgrau, crthknn$knn)
+crthtabela = cbind.data.frame(crthgrau, knn=crthknn$knn)
+crthtabela2 = cbind.data.frame(grau=1:length(crthknn$knnk), knnk=crthknn$knnk)
+subset(crthtabela2$knnk, !is.nan(crthtabela2$knnk))
 
 #
 # 13 - Plotando com ggplot
 #
-crthplot <- ggplot(crthtabela, aes(x = crthgrau, y = crthknn$knn)) + 
-  geom_point(colour="blue") +
+
+crthplot <- ggplot(crthtabela, aes(x = crthgrau)) + 
+  geom_point(aes(y = knn, colour="K(vértice) vs Knn(vértice)")) +
   scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x))) +
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -105,9 +109,15 @@ crthplot <- ggplot(crthtabela, aes(x = crthgrau, y = crthknn$knn)) +
   labs(x="Grau") + 
   labs(y="Média dos graus do vértice K") +
   ggtitle("Cortical Humano - Grau(k) x Knn(k)") + 
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), legend.justification = "top")
 
-crthplot
+crthplot + geom_line(data=crthtabela2, 
+                     aes(x=grau, 
+                         y=knnk, colour="Knn(k)"))+
+  scale_colour_manual("", 
+                      breaks = c("Knn(k)", "K(vértice) vs Knn(vértice)"), 
+                      values = c("blue", "red"))
+
 
 #COEFICIENTE DE CORRELAÇÃO
 cor(crthgrau, crthknn$knn)

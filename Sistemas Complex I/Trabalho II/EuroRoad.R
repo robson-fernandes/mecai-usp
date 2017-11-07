@@ -87,17 +87,21 @@ eurodegdist <- degree_distribution(eurograf,mode="all",
 #
 eurograu <- degree(eurograf, mode = "all")
 
+
 #
 # 12 - Criando uma tabela para plotar no ggplot
 #
-eurotabela = cbind.data.frame(eurograu, euroknn$knn)
+eurotabela = cbind.data.frame(eurograu, knn=euroknn$knn)
+eurotabela2 = cbind.data.frame(grau=1:length(euroknn$knnk), knnk=euroknn$knnk)
+subset(eurotabela2$knnk, !is.nan(eurotabela2$knnk))
 
 
 #
 # 13 - Plotando com ggplot
 #
-europlot <- ggplot(eurotabela, aes(x = eurograu, y = euroknn$knn)) + 
-  geom_point(colour="blue") +
+
+europlot <- ggplot(eurotabela, aes(x = eurograu)) + 
+  geom_point(aes(y = knn, colour="K(vértice) vs Knn(vértice)")) +
   scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x))) +
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -106,9 +110,14 @@ europlot <- ggplot(eurotabela, aes(x = eurograu, y = euroknn$knn)) +
   labs(x="Grau") + 
   labs(y="Média dos graus do vértice K") +
   ggtitle("Euro Road - Grau(k) x Knn(k)") + 
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), legend.justification = "top")
 
-europlot
+europlot + geom_line(data=eurotabela2, 
+                     aes(x=grau, 
+                         y=knnk, colour="Knn(k)"))+
+  scale_colour_manual("", 
+                      breaks = c("Knn(k)", "K(vértice) vs Knn(vértice)"), 
+                      values = c("blue", "red"))
 
 #COEFICIENTE DE CORRELAÇÃO
 cor(eurograu, euroknn$knn)

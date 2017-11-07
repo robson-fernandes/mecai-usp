@@ -87,16 +87,21 @@ hamdegdist <- degree_distribution(hamgraf,mode="all",
 #
 hamgrau <- degree(hamgraf, mode = "all")
 
+
 #
 # 12 - Criando uma tabela para plotar no ggplot
 #
-hamtabela = cbind.data.frame(hamgrau, hamknn$knn)
+hamtabela = cbind.data.frame(hamgrau, knn=hamknn$knn)
+hamtabela2 = cbind.data.frame(grau=1:length(hamknn$knnk), knnk=hamknn$knnk)
+subset(hamtabela2$knnk, !is.nan(hamtabela2$knnk))
+
 
 #
 # 13 - Plotando com ggplot
 #
-hamplot <- ggplot(hamtabela, aes(x = hamgrau, y = hamknn$knn)) + 
-  geom_point(colour="blue") +
+
+hamplot <- ggplot(hamtabela, aes(x = hamgrau)) + 
+  geom_point(aes(y = knn, colour="K(vértice) vs Knn(vértice)")) +
   scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x))) +
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -105,9 +110,14 @@ hamplot <- ggplot(hamtabela, aes(x = hamgrau, y = hamknn$knn)) +
   labs(x="Grau") + 
   labs(y="Média dos graus do vértice K") +
   ggtitle("Hamsterster - Grau(k) x Knn(k)") + 
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), legend.justification = "top")
 
-hamplot
+hamplot + geom_line(data=hamtabela2, 
+                     aes(x=grau, 
+                         y=knnk, colour="Knn(k)"))+
+  scale_colour_manual("", 
+                      breaks = c("Knn(k)", "K(vértice) vs Knn(vértice)"), 
+                      values = c("blue", "red"))
 
 #COEFICIENTE DE CORRELAÇÃO
 cor(hamgrau, hamknn$knn)

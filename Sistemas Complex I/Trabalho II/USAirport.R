@@ -91,13 +91,12 @@ usagrau <- degree(usagraf, mode = "all")
 #
 # 12 - Criando uma tabela para plotar no ggplot
 #
-ustabela = cbind.data.frame(usagrau, usaknn$knn)
+usatabela = cbind.data.frame(usagrau, knn=usaknn$knn)
+usatabela2 = cbind.data.frame(grau=1:length(usaknn$knnk), knnk=usaknn$knnk)
+subset(usatabela2$knnk, !is.nan(usatabela2$knnk))
 
-#
-# 13 - Plotando com ggplot
-#
-usaplot <- ggplot(ustabela, aes(x = usagrau, y = usaknn$knn)) + 
-  geom_point(colour="blue") +
+usaplot <- ggplot(usatabela, aes(x = usagrau)) + 
+  geom_point(aes(y = knn, colour="K(vértice) vs Knn(vértice)")) +
   scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x))) +
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -106,9 +105,14 @@ usaplot <- ggplot(ustabela, aes(x = usagrau, y = usaknn$knn)) +
   labs(x="Grau") + 
   labs(y="Média dos graus do vértice K") +
   ggtitle("US Airport - Grau(k) x Knn(k)") + 
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), legend.justification = "top")
 
-usaplot
+usaplot + geom_line(data=usatabela2, 
+                     aes(x=grau, 
+                         y=knnk, colour="Knn(k)"))+
+  scale_colour_manual("", 
+                      breaks = c("Knn(k)", "K(vértice) vs Knn(vértice)"), 
+                      values = c("blue", "red"))
 
 #COEFICIENTE DE CORRELAÇÃO
 cor(usagrau, usaknn$knn)

@@ -90,13 +90,16 @@ crtmgrau <- degree(crtmgraf, mode = "all")
 #
 # 12 - Criando uma tabela para plotar no ggplot
 #
-crtmtabela = cbind.data.frame(crtmgrau, crtmknn$knn)
+crtmtabela = cbind.data.frame(crtmgrau, knn=crtmknn$knn)
+crtmtabela2 = cbind.data.frame(grau=1:length(crtmknn$knnk), knnk=crtmknn$knnk)
+subset(crtmtabela2$knnk, !is.nan(crtmtabela2$knnk))
 
 #
 # 13 - Plotando com ggplot
 #
-crtmplot <- ggplot(crtmtabela, aes(x = crtmgrau, y = crtmknn$knn)) + 
-  geom_point(colour="blue") +
+
+crtmplot <- ggplot(crtmtabela, aes(x = crtmgrau)) + 
+  geom_point(aes(y = knn, colour="K(vértice) vs Knn(vértice)")) +
   scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),
                 labels = trans_format("log10", math_format(10^.x))) +
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
@@ -105,9 +108,16 @@ crtmplot <- ggplot(crtmtabela, aes(x = crtmgrau, y = crtmknn$knn)) +
   labs(x="Grau") + 
   labs(y="Média dos graus do vértice K") +
   ggtitle("Cortical Macaco - Grau(k) x Knn(k)") + 
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5), legend.justification = "top")
 
-crtmplot
+crtmplot + geom_line(data=crtmtabela2, 
+                     aes(x=grau, 
+                         y=knnk, colour="Knn(k)"))+
+  scale_colour_manual("", 
+                      breaks = c("Knn(k)", "K(vértice) vs Knn(vértice)"), 
+                      values = c("blue", "red"))
+
+
 
 #COEFICIENTE DE CORRELAÇÃO
 cor(crtmgrau, crtmknn$knn)
