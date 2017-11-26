@@ -357,63 +357,63 @@ for (i in 1:5){
 #Cálculo do Desvio Padrão
 
 for (i in 1:5){
-  tabelasdws[i, 1] = mean(degree(ws500[[i]]))
+  tabelasdws[i, 1] = sd(degree(ws500[[i]]))
   tabelasdws[i, 2] = 500 
-  tabelasdws[i, 3] = mean(transitivity(ws500[[i]]))
-  tabelasdws[i, 4] = mean(assortativity.degree(ws500[[i]], directed = FALSE))
-  tabelasdws[i, 5] = mean_distance(ws500[[i]])
-  tabelasdws[i, 6] = mean(na.omit(f_entropia(ws500[[i]])))
-  tabelasdws[i, 7] = mean(f_second_moment(ws500[[i]]))
+  tabelasdws[i, 3] = sd(transitivity(ws500[[i]]))
+  tabelasdws[i, 4] = sd(assortativity.degree(ws500[[i]], directed = FALSE))
+  tabelasdws[i, 5] = sd(mean_distance(ws500[[i]]))
+  tabelasdws[i, 6] = sd(na.omit(f_entropia(ws500[[i]])))
+  tabelasdws[i, 7] = sd(f_second_moment(ws500[[i]]))
 }
 
 for (i in 1:5){
-  tabelasdws[i+5, 1] = mean(degree(ws5001[[i]]))
+  tabelasdws[i+5, 1] = sd(degree(ws5001[[i]]))
   tabelasdws[i+5, 2] = 500 
-  tabelasdws[i+5, 3] = mean(transitivity(ws5001[[i]]))
-  tabelasdws[i+5, 4] = mean(assortativity.degree(ws5001[[i]], directed = FALSE))
-  tabelasdws[i+5, 5] = mean_distance(ws5001[[i]])
-  tabelasdws[i+5, 6] = mean(na.omit(f_entropia(ws5001[[i]])))
-  tabelasdws[i+5, 7] = mean(f_second_moment(ws5001[[i]]))
+  tabelasdws[i+5, 3] = sd(transitivity(ws5001[[i]]))
+  tabelasdws[i+5, 4] = sd(assortativity.degree(ws5001[[i]], directed = FALSE))
+  tabelasdws[i+5, 5] = sd(mean_distance(ws5001[[i]]))
+  tabelasdws[i+5, 6] = sd(na.omit(f_entropia(ws5001[[i]])))
+  tabelasdws[i+5, 7] = sd(f_second_moment(ws5001[[i]]))
 }
 
 for (i in 1:5){
-  tabelasdws[i+10, 1] = mean(degree(ws1000[[i]]))
+  tabelasdws[i+10, 1] = sd(degree(ws1000[[i]]))
   tabelasdws[i+10, 2] = 1000 
-  tabelasdws[i+10, 3] = mean(transitivity(ws1000[[i]]))
-  tabelasdws[i+10, 4] = mean(assortativity.degree(ws1000[[i]], directed = FALSE))
-  tabelasdws[i+10, 5] = mean_distance(ws1000[[i]])
-  tabelasdws[i+10, 6] = mean(na.omit(f_entropia(ws1000[[i]])))
-  tabelasdws[i+10, 7] = mean(f_second_moment(ws1000[[i]]))
+  tabelasdws[i+10, 3] = sd(transitivity(ws1000[[i]]))
+  tabelasdws[i+10, 4] = sd(assortativity.degree(ws1000[[i]], directed = FALSE))
+  tabelasdws[i+10, 5] = sd(mean_distance(ws1000[[i]]))
+  tabelasdws[i+10, 6] = sd(na.omit(f_entropia(ws1000[[i]])))
+  tabelasdws[i+10, 7] = sd(f_second_moment(ws1000[[i]]))
 }
 
 for (i in 1:5){
-  tabelasdws[i+15, 1] = mean(degree(ws10001[[i]]))
+  tabelasdws[i+15, 1] = sd(degree(ws10001[[i]]))
   tabelasdws[i+15, 2] = 1000 
-  tabelasdws[i+15, 3] = mean(transitivity(ws10001[[i]]))
-  tabelasdws[i+15, 4] = mean(assortativity.degree(ws10001[[i]], directed = FALSE))
-  tabelasdws[i+15, 5] = mean_distance(ws10001[[i]])
-  tabelasdws[i+15, 6] = mean(na.omit(f_entropia(ws10001[[i]])))
-  tabelasdws[i+15, 7] = mean(f_second_moment(ws10001[[i]]))
+  tabelasdws[i+15, 3] = sd(transitivity(ws10001[[i]]))
+  tabelasdws[i+15, 4] = sd(assortativity.degree(ws10001[[i]], directed = FALSE))
+  tabelasdws[i+15, 5] = sd(mean_distance(ws10001[[i]]))
+  tabelasdws[i+15, 6] = sd(na.omit(f_entropia(ws10001[[i]])))
+  tabelasdws[i+15, 7] = sd(f_second_moment(ws10001[[i]]))
 }
 
 for (i in 1:5){
-  tabelasdws[i+20, 1] = mean(degree(ws2000[[i]]))
+  tabelasdws[i+20, 1] = sd(degree(ws2000[[i]]))
   tabelasdws[i+20, 2] = 2000 
-  tabelasdws[i+20, 3] = mean(transitivity(ws2000[[i]]))
-  tabelasdws[i+20, 4] = mean(assortativity.degree(ws2000[[i]], directed = FALSE))
-  tabelasdws[i+20, 5] = mean_distance(ws2000[[i]])
-  tabelasdws[i+20, 6] = mean(na.omit(f_entropia(ws2000[[i]])))
-  tabelasdws[i+20, 7] = mean(f_second_moment(ws2000[[i]]))
+  tabelasdws[i+20, 3] = sd(transitivity(ws2000[[i]]))
+  tabelasdws[i+20, 4] = sd(assortativity.degree(ws2000[[i]], directed = FALSE))
+  tabelasdws[i+20, 5] = sd(mean_distance(ws2000[[i]]))
+  tabelasdws[i+20, 6] = sd(na.omit(f_entropia(ws2000[[i]])))
+  tabelasdws[i+20, 7] = sd(f_second_moment(ws2000[[i]]))
 }
 
 for (i in 1:5){
-  tabelasdws[i+25, 1] = mean(degree(ws20001[[i]]))
+  tabelasdws[i+25, 1] = sd(degree(ws20001[[i]]))
   tabelasdws[i+25, 2] = 2000 
-  tabelasdws[i+25, 3] = mean(transitivity(ws20001[[i]]))
-  tabelasdws[i+25, 4] = mean(assortativity.degree(ws20001[[i]], directed = FALSE))
-  tabelasdws[i+25, 5] = mean_distance(ws20001[[i]])
-  tabelasdws[i+25, 6] = mean(na.omit(f_entropia(ws20001[[i]])))
-  tabelasdws[i+25, 7] = mean(f_second_moment(ws20001[[i]]))
+  tabelasdws[i+25, 3] = sd(transitivity(ws20001[[i]]))
+  tabelasdws[i+25, 4] = sd(assortativity.degree(ws20001[[i]], directed = FALSE))
+  tabelasdws[i+25, 5] = sd(mean_distance(ws20001[[i]]))
+  tabelasdws[i+25, 6] = sd(na.omit(f_entropia(ws20001[[i]])))
+  tabelasdws[i+25, 7] = sd(f_second_moment(ws20001[[i]]))
 }
 
 
@@ -468,33 +468,33 @@ for (i in 1:10){
 
 #Desvio Padrão
 for (i in 1:10){
-  tabelasdba[i, 1] = mean(degree(ba500[[i]]))
+  tabelasdba[i, 1] = sd(degree(ba500[[i]]))
   tabelasdba[i, 2] = 500 
-  tabelasdba[i, 3] = mean(transitivity(ba500[[i]]))
-  tabelasdba[i, 4] = mean(assortativity.degree(ba500[[i]], directed = FALSE))
-  tabelasdba[i, 5] = mean_distance(ba500[[i]])
-  tabelasdba[i, 6] = mean(na.omit(f_entropia(ba500[[i]])))
-  tabelasdba[i, 7] = mean(f_second_moment(ba500[[i]]))
+  tabelasdba[i, 3] = sd(transitivity(ba500[[i]]))
+  tabelasdba[i, 4] = sd(assortativity.degree(ba500[[i]], directed = FALSE))
+  tabelasdba[i, 5] = sd(mean_distance(ba500[[i]]))
+  tabelasdba[i, 6] = sd(na.omit(f_entropia(ba500[[i]])))
+  tabelasdba[i, 7] = sd(f_second_moment(ba500[[i]]))
 }
 
 for (i in 1:10){
-  tabelasdba[i+10, 1] = mean(degree(ba1000[[i]]))
+  tabelasdba[i+10, 1] = sd(degree(ba1000[[i]]))
   tabelasdba[i+10, 2] = 1000 
-  tabelasdba[i+10, 3] = mean(transitivity(ba1000[[i]]))
-  tabelasdba[i+10, 4] = mean(assortativity.degree(ba1000[[i]], directed = FALSE))
-  tabelasdba[i+10, 5] = mean_distance(ba1000[[i]])
-  tabelasdba[i+10, 6] = mean(na.omit(f_entropia(ba1000[[i]])))
-  tabelasdba[i+10, 7] = mean(f_second_moment(ba1000[[i]]))
+  tabelasdba[i+10, 3] = sd(transitivity(ba1000[[i]]))
+  tabelasdba[i+10, 4] = sd(assortativity.degree(ba1000[[i]], directed = FALSE))
+  tabelasdba[i+10, 5] = sd(mean_distance(ba1000[[i]]))
+  tabelasdba[i+10, 6] = sd(na.omit(f_entropia(ba1000[[i]])))
+  tabelasdba[i+10, 7] = sd(f_second_moment(ba1000[[i]]))
 }
 
 for (i in 1:10){
-  tabelasdba[i+20, 1] = mean(degree(ba2000[[i]]))
+  tabelasdba[i+20, 1] = sd(degree(ba2000[[i]]))
   tabelasdba[i+20, 2] = 2000 
-  tabelasdba[i+20, 3] = mean(transitivity(ba2000[[i]]))
-  tabelasdba[i+20, 4] = mean(assortativity.degree(ba2000[[i]], directed = FALSE))
-  tabelasdba[i+20, 5] = mean_distance(ba2000[[i]])
-  tabelasdba[i+20, 6] = mean(na.omit(f_entropia(ba2000[[i]])))
-  tabelasdba[i+20, 7] = mean(f_second_moment(ba2000[[i]]))
+  tabelasdba[i+20, 3] = sd(transitivity(ba2000[[i]]))
+  tabelasdba[i+20, 4] = sd(assortativity.degree(ba2000[[i]], directed = FALSE))
+  tabelasdba[i+20, 5] = sd(mean_distance(ba2000[[i]]))
+  tabelasdba[i+20, 6] = sd(na.omit(f_entropia(ba2000[[i]])))
+  tabelasdba[i+20, 7] = sd(f_second_moment(ba2000[[i]]))
 }
 
 summary(tabelamediaer)
