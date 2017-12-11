@@ -213,6 +213,7 @@ plotBGLM <- function(ds.resultado)
                y = ~real, 
                name = "Real", 
                type = "scatter",
+               line = list(shape = "spline"),
                mode = "lines") %>%
     layout(xaxis = x, yaxis = y)  %>%
     add_trace(y = ~previsto,
